@@ -6,30 +6,43 @@ There is no official API released, yet. FreeTrade is a zero-fee UK-regulated sto
 * Find list of `tradable securities` with information on the asset class, market, currency, country.
 * Create a list of tickers for `Trading View`'s watch list. 
 * Find `historical prices` (up to 5 years of past).
+* Download or update `historical prices`.
 
 ## Install
+Install through `pip` package manger:
+```bash
+pip install freetrade
+```
+
+Alternatively, for developing this package:
 ```bash
 conda create -n myenv python=3.7
 conda activate myenv
 pip install -r requirements.txt
 ```
-
-Alternatively:
-```bash
-pip install freetrade
-```
-
 ## API
 Create a `FreeTrade` object
 ```python
 from freetrade import FreeTrade
 
-api_key = '...'  # API key
-app_id = '...'  # APP ID
-ft = FreeTrade(api_key, app_id)
+api_key = '...'  # Algolia API key
+app_id = '...'  # Algolia APP ID
+quandl_api_key = '...' # Quandl API key
+ft = FreeTrade(api_key, app_id, quandl_api_key)
 ```
 
-The API key and app ID can be found via Charles proxy.
+The above keys and IDs can be found via Charles proxy:
+* `Algolia` key and ID - when browsing/discovering list of assets;
+* `Quandl` key - when browsing assets from LSE (London Stock Exchange).
+
+### Sample code of using `ft` object
+Assuming `ft` object is created, here is how one month of historical price for a stock.
+```python
+prices = ft.get_ticker_history('XNAS', 'TSLA')
+
+for history_date, price in prices.items():
+    print(f'{history_date}: ${price:.2f}')
+```
 
 ### Get assets
 ```python
@@ -106,43 +119,53 @@ tickers_union = {
 }
 ```
 
-### Get ETFs
-```python
-etfs = ft.get_etfs()
-```
-
-Returns a list of ETF assets:
-```python
-etfs = [<LSE:ERNU asset>, <LSE:CS51 asset>, <LSE:IDVY asset>, ...]
-```
-
 ### Get price history
 ```python
-prices = ft.get_ticker_history('TSLA', duration='1m')
+tesla = ft.get_ticker_history('XNAS', 'TSLA', duration='1m')
+national_grid = ft.get_ticker_history('XLON', 'NG.', duration='1m')
 ```
-The possible duration values, where `5y` is default: 
+
+The possible duration values, where `1m` is default: 
 * `5y`, `2y`, `1y`, `ytd`, `6m`, `3m`, `1m`, `1d`
 
-Returns a list of data points. Sample output:
+Returns an `OrderedDict` of data points `(date, adjusted closing price)` sorted by date in ascending order.
+
+Sample output:
 ```python
-prices = [
-    {
-        "date": "2019-03-28",
-        "open": 277.16,
-        "high": 280.33,
-        "low": 275.1,
-        "close": 278.62,
-        "volume": 6774093,
-        "unadjustedVolume": 6774093,
-        "change": 3.79,
-        "changePercent": 1.379,
-        "vwap": 277.8336,
-        "label": "Mar 28",
-        "changeOverTime": 0
-    }, 
+tesla = OrderedDict([
+    ('2019-04-04', 267.78),
+    ('2019-04-05', 274.96),
+    ('2019-04-08', 273.2),
+    ('2019-04-09', 272.31),
+    ('2019-04-10', 276.06),
     ...
-]
+])
 ``` 
+
+Notes:
+* use `Quandl` for UK securities;
+* uses `IEXTrading` for other securities.
+
+### Download or update historical prices
+```python
+ft.update_historical_prices()
+```
+
+Saves the adjusted historical closing prices for the assets into `history` directory. If it does not exist, it is created.
+
+The file name is the ticker's symbol, and each the prices are saved in ascending order.
+
+Sample in `history/TSLA.csv`:
+```csv
+2014-05-05,216.61
+2014-05-06,207.28
+2014-05-07,201.35
+2014-05-08,178.59
+2014-05-09,182.26
+2014-05-12,184.67
+2014-05-13,190.16
+...
+```
 
 ## Anything else?
 * Feel free to make a `GitHub issue`, if you find any issues or have enhancement ideas.
