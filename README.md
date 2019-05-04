@@ -5,8 +5,10 @@ There is no official API released, yet. FreeTrade is a zero-fee UK-regulated sto
 ## What is supported
 * Find list of `tradable securities` with information on the asset class, market, currency, country.
 * Create a list of tickers for `Trading View`'s watch list. 
-* Find `historical prices` (up to 5 years of past).
-* Download or update `historical prices`.
+* `Historical prices`:
+  * Find up to 5 years of past;
+  * Download or update in `csv` files into `history` directory;
+  * Load as `pandas.DataFrame`.
 
 ## Install
 Install through `pip` package manger:
@@ -167,6 +169,30 @@ Sample in `history/TSLA.csv`:
 ...
 ```
 
+### Load the historical data as `pandas.DataFrame`
+This function loads the historical data from `history` directory.
+Before this, run `ft.update_historical_prices()` to download the historical data.
+
+Note that some assets have missing prices as they were not traded during that day, thus they show up as `nan`.
+
+```python
+df = ft.load_historical_data_as_dataframe()
+print(df.head(), df.shape)
+```
+
+
+Sample output:
+```text
+               CSCO          SVT  ...          WTB          NXT
+Date                              ...                          
+2014-05-05  19.5875  1486.452691  ...  3650.414898  5184.507159
+2014-05-06  19.3870  1489.696450  ...  3659.383977  5137.446580
+2014-05-07  19.5150  1509.159006  ...  3645.033451  5094.307715
+2014-05-08  19.6413  1510.780885  ...  3677.322133  5082.542570
+2014-05-09  19.6430  1512.402765  ...  3676.425226  5070.777425
+
+[5 rows x 341 columns] (1305, 341)
+```
 ## Anything else?
 * Feel free to make a `GitHub issue`, if you find any issues or have enhancement ideas.
 

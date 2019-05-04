@@ -7,6 +7,8 @@ from dateutil import relativedelta, parser
 import os
 import csv
 from collections import OrderedDict
+import pandas as pd
+import glob
 
 
 class FreeTrade:
@@ -161,7 +163,7 @@ class FreeTrade:
         return data
 
     @staticmethod
-    def load_historical_price(ticker: str, directory: str = 'history'):
+    def load_historical_price(ticker: str, directory: str = 'history') -> OrderedDict:
         ticker_file = directory + '/' + ticker + '.csv'
         old_prices = OrderedDict()
         with open(ticker_file, 'r') as f:
@@ -205,3 +207,18 @@ class FreeTrade:
                 # update the file
                 self.write_historical_price(prices, ticker, directory)
 
+    @staticmethod
+    def load_historical_data_as_dataframe(directory: str = 'history') -> pd.DataFrame:
+        files = glob.glob(f'{directory}/*.csv')
+        if len(files) == 0:
+            return pd.DataFrame()
+
+        dm = pd.read_csv(files[0], header=None)
+        for file in files[1:]:
+            df = pd.read_csv(file, header=None)
+            dm = dm.merge(df, how='outer', on=0)
+
+        dm.columns = ['Date'] + list(map(lambda x: x[8:-4], files))
+        dm.set_index('Date', inplace=True)
+
+        return dm
