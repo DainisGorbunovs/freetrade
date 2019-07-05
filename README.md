@@ -5,10 +5,8 @@ There is no official API released, yet. FreeTrade is a zero-fee UK-regulated sto
 ## What is supported
 * Find list of `tradable securities` with information on the asset class, market, currency, country.
 * Create a list of tickers for `Trading View`'s watch list. 
-* `Historical prices`:
-  * Find up to 5 years of past;
-  * Download or update in `csv` files into `history` directory;
-  * Load as `pandas.DataFrame`.
+* ~~Historical prices~~ - removed due to API change. Will read later.
+* Logging into Freetrade account and saving the session into `ft-session.json` file.
 
 ## Install
 Install through `pip` package manger:
@@ -27,15 +25,16 @@ Create a `FreeTrade` object
 ```python
 from freetrade import FreeTrade
 
-api_key = '...'  # Algolia API key
-app_id = '...'  # Algolia APP ID
-quandl_api_key = '...' # Quandl API key
-ft = FreeTrade(api_key, app_id, quandl_api_key)
+email = '...'  # Email to use for the login
+ft = FreeTrade(email)
 ```
 
-The above keys and IDs can be found via Charles proxy:
-* `Algolia` key and ID - when browsing/discovering list of assets;
-* `Quandl` key - when browsing assets from LSE (London Stock Exchange).
+Before running this, it is necessary to set the API keys. Edit `ft-keys.json` to include the necessary API keys. 
+These keys can be found using a tool, which can extract StringCare secrets, e.g. [DeStringCare](https://github.com/DainisGorbunovs/DeStringCare).
+
+By default when creating the object, it will try to load an older authenticated session.
+Otherwise it logs in again, and requests a one time password, which is sent to the email.
+
 
 ### Sample code of using `ft` object
 Assuming `ft` object is created, here is how one month of historical price for a stock.
@@ -44,6 +43,26 @@ prices = ft.get_ticker_history('XNAS', 'TSLA')
 
 for history_date, price in prices.items():
     print(f'{history_date}: ${price:.2f}')
+```
+
+### Finding post code
+```python
+postcode = 'E15JL'
+address = ft.api.get_address_by_postcode()
+```
+
+Returns a list of addresses, e.g. sample address:
+```json
+[{
+    "summaryline": "Freetrade, 68-80 Hanbury Street, London, Greater London, E1 5JL",
+    "organisation": "Freetrade",
+    "number": "68-80",
+    "premise": "68-80",
+    "street": "Hanbury Street",
+    "posttown": "London",
+    "county": "Greater London",
+    "postcode": "E1 5JL"
+}]
 ```
 
 ### Get assets
@@ -122,33 +141,11 @@ tickers_union = {
 ```
 
 ### Get price history
-```python
-tesla = ft.get_ticker_history('XNAS', 'TSLA', duration='1m')
-national_grid = ft.get_ticker_history('XLON', 'NG.', duration='1m')
-```
-
-The possible duration values, where `1m` is default: 
-* `5y`, `2y`, `1y`, `ytd`, `6m`, `3m`, `1m`, `1d`
-
-Returns an `OrderedDict` of data points `(date, adjusted closing price)` sorted by date in ascending order.
-
-Sample output:
-```python
-tesla = OrderedDict([
-    ('2019-04-04', 267.78),
-    ('2019-04-05', 274.96),
-    ('2019-04-08', 273.2),
-    ('2019-04-09', 272.31),
-    ('2019-04-10', 276.06),
-    ...
-])
-``` 
-
-Notes:
-* use `Quandl` for UK securities;
-* uses `IEXTrading` for other securities.
+Removed, as the API has changed. Will be replaced.
 
 ### Download or update historical prices
+Does not work due to price history API changes.
+
 ```python
 ft.update_historical_prices()
 ```

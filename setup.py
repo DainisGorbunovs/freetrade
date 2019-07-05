@@ -5,7 +5,7 @@ with open('README.md', 'r') as fh:
 
 setuptools.setup(
     name='freetrade',
-    version='0.0.4',
+    version='0.0.5',
     author='Dainis Gorbunovs',
     author_email='dgdev@protonmail.com',
     description='API for Freetrade app',
@@ -16,8 +16,8 @@ setuptools.setup(
     keywords=['Freetrade', 'API', 'stock'],
     install_requires=[
         'requests',
-        'python-dateutil',
-        'pandas'
+        'pandas',
+        'PyJWT'
     ],
     classifiers=[
         'Intended Audience :: Developers',
