@@ -50,15 +50,6 @@ The code parses OTP from the standard user input. Alternatively specify `otp_par
  to a function which can fetch the email and parse the OTP itself.
 
 ### `Index` - no authentication needed
-#### Ticker history
-Assuming `ft` object is created, here is how one month of historical price for a stock.
-```python
-prices = ft.index.get_ticker_history('TSLA', 'XNAS')
-
-for history_date, price in prices.items():
-    print(f'{history_date}: ${price:.2f}')
-```
-
 #### Get assets
 ```python
 assets = ft.index.get_assets()
@@ -136,6 +127,15 @@ tickers_union = {
 ```
 
 ### `API` - requires authentication
+#### Ticker history
+Assuming `ft` object is created, here is how one month of historical price for a stock.
+```python
+prices = ft.api.get_ticker_history('TSLA', 'XNAS')
+
+for history_date, price in prices.items():
+    print(f'{history_date}: ${price:.2f}')
+```
+
 #### Finding the address for a post code
 ```python
 postcode = 'E15JL'
