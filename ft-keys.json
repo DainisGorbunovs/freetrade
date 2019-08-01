@@ -1,6 +1,7 @@
 {
     "algolia_api_key": "",
     "algolia_application_id": "",
+    "algolia_index_name": "",
     "google_android_device_verification_api_key": "",
     "prod_auth_dealstream_host": "",
     "prod_dealstream_host": ""
